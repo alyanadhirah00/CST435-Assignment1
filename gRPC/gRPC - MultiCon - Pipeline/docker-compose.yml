@@ -1,0 +1,70 @@
+services:
+  # --- Service 1: The "Front Door" ---
+  service-clean:
+    build:
+      context: .
+      dockerfile: service_clean/Dockerfile
+    container_name: worker-clean
+    # ... (rest of your service-clean config) ...
+    ports:
+      - "50051:50051"
+    networks: # <-- ADD THIS
+      - processing-net
+
+  # --- Service 2: The Tokenizer ---
+  service-tokenize:
+    build:
+      context: .
+      dockerfile: service_tokenize/Dockerfile
+    container_name: worker-tokenize
+    # ... (rest of your service-tokenize config) ...
+    ports:
+      - "50052:50052"
+    networks: # <-- ADD THIS
+      - processing-net
+
+  # --- Service 3: The Sentiment Scorer ---
+  service-sentiment:
+    build:
+      context: .
+      dockerfile: service_sentiment/Dockerfile
+    container_name: worker-sentiment
+    # ... (rest of your service-sentiment config) ...
+    ports:
+      - "50053:50053"
+    networks: # <-- ADD THIS
+      - processing-net
+
+  # --- Service 4: The Report Writer ---
+  service-report:
+    build:
+      context: .
+      dockerfile: service_report/Dockerfile
+    container_name: worker-report
+    # ... (rest of your service-report config) ...
+    ports:
+      - "50054:50054"
+    volumes:
+      - ./reports:/app/reports
+    networks: # <-- ADD THIS
+      - processing-net
+
+  # --- The Client / Orchestrator ---
+  client:
+    build:
+      context: .
+      dockerfile: client.Dockerfile
+    container_name: grpc-client-orchestrator
+    # ... (rest of your client config) ...
+    depends_on:
+      - service-clean
+      - service-tokenize
+      - service-sentiment
+      - service-report
+    networks: # <-- ADD THIS
+      - processing-net
+
+# --- ADD THIS ENTIRE BLOCK AT THE BOTTOM ---
+networks:
+  processing-net:
+    driver: bridge

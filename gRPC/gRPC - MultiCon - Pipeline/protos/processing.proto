@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+// --- ADD THIS IMPORT ---
+import "google/protobuf/empty.proto";
+
+package processing;
+
+// --- Your message definitions are unchanged ---
+message CleanRequest {
+  string raw_text = 1;
+  string original_filename = 2;
+}
+
+message TokenizeRequest {
+  string clean_text = 1;
+  string original_filename = 2;
+}
+
+message SentimentRequest {
+  repeated string tokens = 1;
+  string original_filename = 2;
+}
+
+message ReportRequest {
+  string original_filename = 1;
+  string sentiment = 2;
+}
+// ReportResponse is NO LONGER NEEDED by the chain
+
+
+// --- THE BIG CHANGE: All services now return 'Empty' ---
+service CleanService {
+  rpc Process(CleanRequest) returns (google.protobuf.Empty) {}
+}
+
+service TokenizeService {
+  rpc Process(TokenizeRequest) returns (google.protobuf.Empty) {}
+}
+
+service SentimentService {
+  rpc Process(SentimentRequest) returns (google.protobuf.Empty) {}
+}
+
+service ReportService {
+  rpc Process(ReportRequest) returns (google.protobuf.Empty) {}
+}
