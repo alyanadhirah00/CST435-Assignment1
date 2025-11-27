@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+package processing;
+
+// --- MESSAGES (Define the data) ---
+// Client sends this to CleanService
+message CleanRequest {
+  string raw_text = 1;
+}
+// CleanService returns this
+message CleanResponse {
+  string clean_text = 1;
+}
+
+// Client sends this to TokenizeService
+message TokenizeRequest {
+  string clean_text = 1;
+}
+// TokenizeService returns this
+message TokenizeResponse {
+  repeated string tokens = 1;
+}
+
+// Client sends this to SentimentService
+message SentimentRequest {
+  repeated string tokens = 1;
+}
+// SentimentService returns this
+message SentimentResponse {
+  string sentiment = 1;
+}
+
+// Client sends this to ReportService
+message ReportRequest {
+  string original_filename = 1;
+  string sentiment = 2;
+}
+// ReportService returns this
+message ReportResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+
+// --- SERVICES (Define the functions) ---
+service CleanService {
+  rpc Process(CleanRequest) returns (CleanResponse) {}
+}
+
+service TokenizeService {
+  rpc Process(TokenizeRequest) returns (TokenizeResponse) {}
+}
+
+service SentimentService {
+  rpc Process(SentimentRequest) returns (SentimentResponse) {}
+}
+
+service ReportService {
+  rpc Process(ReportRequest) returns (ReportResponse) {}
+}
