@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  service-clean:
+    build: .
+    image: java-rmi-app
+    environment:
+      - SERVICE_CLASS=services.CleanServiceImpl
+    networks:
+      - rmi-net
+
+  service-tokenize:
+    build: .
+    image: java-rmi-app
+    environment:
+      - SERVICE_CLASS=services.TokenizeServiceImpl
+    networks:
+      - rmi-net
+
+  service-sentiment:
+    build: .
+    image: java-rmi-app
+    environment:
+      - SERVICE_CLASS=services.SentimentServiceImpl
+    networks:
+      - rmi-net
+
+  service-report:
+    build: .
+    image: java-rmi-app
+    environment:
+      - SERVICE_CLASS=services.ReportServiceImpl
+    volumes:
+      - ./reports:/app/reports
+    networks:
+      - rmi-net
+
+  client:
+    build: .
+    image: java-rmi-app
+    environment:
+      - SERVICE_CLASS=client.Client
+    depends_on:
+      - service-clean
+      - service-tokenize
+      - service-sentiment
+      - service-report
+    volumes:
+      - ./reports:/app/reports
+    networks:
+      - rmi-net
+
+networks:
+  rmi-net:
+    driver: bridge

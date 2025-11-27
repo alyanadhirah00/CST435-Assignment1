@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  service-clean:
+    build: .
+    image: java-rmi-pipeline
+    container_name: service-clean
+    # The class is now at /app/CleanServiceImpl.class, so this works:
+    command: java -cp . CleanServiceImpl
+    environment:
+      - JAVA_TOOL_OPTIONS=-Djava.rmi.server.hostname=service-clean
+    networks:
+      - rmi-net
+
+  service-tokenize:
+    build: .
+    image: java-rmi-pipeline
+    container_name: service-tokenize
+    command: java -cp . TokenizeServiceImpl
+    environment:
+      - JAVA_TOOL_OPTIONS=-Djava.rmi.server.hostname=service-tokenize
+    networks:
+      - rmi-net
+    depends_on:
+      - service-clean
+
+  service-sentiment:
+    build: .
+    image: java-rmi-pipeline
+    container_name: service-sentiment
+    command: java -cp . SentimentServiceImpl
+    environment:
+      - JAVA_TOOL_OPTIONS=-Djava.rmi.server.hostname=service-sentiment
+    networks:
+      - rmi-net
+    depends_on:
+      - service-tokenize
+
+  service-report:
+    build: .
+    image: java-rmi-pipeline
+    container_name: service-report
+    command: java -cp . ReportServiceImpl
+    environment:
+      - JAVA_TOOL_OPTIONS=-Djava.rmi.server.hostname=service-report
+    volumes:
+      - ./reports:/app/reports
+    networks:
+      - rmi-net
+    depends_on:
+      - service-sentiment
+
+  client:
+    build: .
+    image: java-rmi-pipeline
+    container_name: client
+    command: java -cp . Client
+    volumes:
+      - ./textfile:/app/textfile
+    networks:
+      - rmi-net
+    depends_on:
+      - service-clean
+      - service-report
+
+networks:
+  rmi-net:
+    driver: bridge
