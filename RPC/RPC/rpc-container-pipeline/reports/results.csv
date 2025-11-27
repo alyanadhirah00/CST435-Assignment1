@@ -1,0 +1,13 @@
+filename,sentiment
+textfile/review1.txt,Neutral
+textfile/review1.txt,Neutral
+textfile/review1.txt,Neutral
+textfile/review1.txt,Neutral
+textfile/review2.txt,Negative
+textfile/review2.txt,Neutral
+textfile/review2.txt,Neutral
+textfile/review2.txt,Neutral
+textfile/review3.txt,Positive
+textfile/review3.txt,Neutral
+textfile/review3.txt,Neutral
+textfile/review3.txt,Neutral

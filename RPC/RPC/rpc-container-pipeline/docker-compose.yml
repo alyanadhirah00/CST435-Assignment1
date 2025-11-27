@@ -1,0 +1,46 @@
+services:
+  service-clean:
+    build: .
+    container_name: service-clean
+    command: python services/service_clean.py
+    ports:
+      - "50051:50051"
+    depends_on:
+      - service-tokenize
+
+  service-tokenize:
+    build: .
+    container_name: service-tokenize
+    command: python services/service_tokenize.py
+    ports:
+      - "50052:50052"
+    depends_on:
+      - service-sentiment
+
+  service-sentiment:
+    build: .
+    container_name: service-sentiment
+    command: python services/service_sentiment.py
+    ports:
+      - "50053:50053"
+    depends_on:
+      - service-report
+
+  service-report:
+    build: .
+    container_name: service-report
+    command: python services/service_report.py
+    ports:
+      - "50054:50054"
+    volumes:
+      - ./reports:/app/reports
+
+  client:
+    build: .
+    container_name: client
+    command: python client.py
+    depends_on:
+      - service-clean
+      - service-tokenize
+      - service-sentiment
+      - service-report

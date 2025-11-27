@@ -1,0 +1,4 @@
+filename,sentiment
+review1.txt,Positive
+review2.txt,Negative
+review3.txt,Positive
