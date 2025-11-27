@@ -1,0 +1,39 @@
+services:
+  service_clean:
+    build:
+      context: ./services
+    command: python service_clean.py
+    ports:
+      - "50051:50051"
+
+  service_tokenize:
+    build:
+      context: ./services
+    command: python service_tokenize.py
+    ports:
+      - "50052:50052"
+
+  service_sentiment:
+    build:
+      context: ./services
+    command: python service_sentiment.py
+    ports:
+      - "50053:50053"
+
+  service_report:
+    build:
+      context: ./services
+    command: python service_report.py
+    ports:
+      - "50054:50054"
+    volumes:
+      - ./reports:/app/reports  # Save results to local folder
+
+  client:
+    build:
+      context: .
+    depends_on:
+      - service_clean
+      - service_tokenize
+      - service_sentiment
+      - service_report
