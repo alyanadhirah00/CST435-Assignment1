@@ -1,0 +1,59 @@
+services:
+  service-clean:
+    build:
+      context: .
+      dockerfile: service_clean/Dockerfile
+    container_name: worker-clean-orchestrator # New name
+    ports:
+      - "50061:50061" # <-- NEW PORT
+    networks:
+      - processing-net
+
+  service-tokenize:
+    build:
+      context: .
+      dockerfile: service_tokenize/Dockerfile
+    container_name: worker-tokenize-orchestrator # New name
+    ports:
+      - "50062:50062" # <-- NEW PORT
+    networks:
+      - processing-net
+
+  service-sentiment:
+    build:
+      context: .
+      dockerfile: service_sentiment/Dockerfile
+    container_name: worker-sentiment-orchestrator # New name
+    ports:
+      - "50063:50063" # <-- NEW PORT
+    networks:
+      - processing-net
+
+  service-report:
+    build:
+      context: .
+      dockerfile: service_report/Dockerfile
+    container_name: worker-report-orchestrator # New name
+    ports:
+      - "50064:50064" # <-- NEW PORT
+    volumes:
+      - ./reports:/app/reports
+    networks:
+      - processing-net
+
+  client:
+    build:
+      context: .
+      dockerfile: client.Dockerfile
+    container_name: grpc-client-orchestrator
+    depends_on:
+      - service-clean
+      - service-tokenize
+      - service-sentiment
+      - service-report
+    networks:
+      - processing-net
+
+networks:
+  processing-net:
+    driver: bridge
